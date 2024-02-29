@@ -1,0 +1,285 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\usepackage[normalem]{ulem}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{cse-5370-bio-informatics}{%
+\section{\texorpdfstring{\textbf{\uline{CSE 5370:
+BIO-INFORMATICS}}}{CSE 5370: BIO-INFORMATICS}}\label{cse-5370-bio-informatics}}
+
+\hypertarget{homework-4}{%
+\section{\texorpdfstring{\textbf{\uline{HOMEWORK --
+4}}}{HOMEWORK -- 4}}\label{homework-4}}
+
+\hypertarget{section}{%
+\section{}\label{section}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item ~
+  \hypertarget{vae-implementation}{%
+  \subsection{\texorpdfstring{\textbf{VAE
+  Implementation}}{VAE Implementation}}\label{vae-implementation}}
+\item ~
+  \hypertarget{pytorch-implementation}{%
+  \subsection{\texorpdfstring{\textbf{Pytorch
+  Implementation}}{Pytorch Implementation}}\label{pytorch-implementation}}
+\end{enumerate}
+
+Implemented the assignment on Google Colab as per the instructions
+
+\hypertarget{setting-up-the-framework}{%
+\subsection{\texorpdfstring{ \textbf{2.1) Setting up the
+Framework}}{ 2.1) Setting up the Framework}}\label{setting-up-the-framework}}
+
+\includegraphics[width=2.85025in,height=3.45863in]{vertopal_30dbe43b6fad4b37887e227972ded77d/media/image1.png}
+
+\hypertarget{downloading-the-dataset}{%
+\subsection{\texorpdfstring{\textbf{2.2) Downloading the
+Dataset}}{2.2) Downloading the Dataset}}\label{downloading-the-dataset}}
+
+\includegraphics[width=6.26806in,height=2.05in]{vertopal_30dbe43b6fad4b37887e227972ded77d/media/image2.png}
+
+\hypertarget{dataset.py-placeholders}{%
+\subsection{\texorpdfstring{\textbf{2.3) Dataset.py Placeholders}
+}{2.3) Dataset.py Placeholders }}\label{dataset.py-placeholders}}
+
+The dataset.py code defines a PyTorch dataset for patching images of
+breast cancer biopsies. The dataset class takes as input several
+parameters such as the data directory, patch size, number of patches per
+image, whitespace threshold, and others, which are used to generate the
+patches.
+
+The \_make\_coords() method is responsible for generating and storing
+the coordinates of the patches. It uses multiprocessing to speed up the
+process, and if the coordinates have already been generated before, it
+reads them from the coords.data file instead of calculating them again.
+The \_fetch\_coords() method is used by the multiprocessing function to
+extract the coordinates of patches from each SVS image. \_load\_file()
+method loads a single SVS image using the pyvips library, \_patching()
+method extracts random patches from the image, \_image\_to\_tensor()
+method converts the extracted patch into a PyTorch tensor,
+\_filter\_whitespace() method checks if the patch contains enough
+information, and finally \_get\_intersections() method checks if the
+patch overlaps with previously extracted patches or not.
+
+The BreastDataset class uses the Dataset module from the PyTorch library
+and overrides the \_\_init\_\_() method to initialize the class with the
+input parameters. It also overrides the \_\_len\_\_() method to return
+the total number of patches, and the \_\_getitem\_\_() method to return
+a single patch at a time.
+
+Overall, this code generates patches of breast biopsy images to be used
+for training deep learning models to detect cancer in the images.
+
+\hypertarget{section-1}{%
+\subsection{}\label{section-1}}
+
+\hypertarget{datamodule.py-placeholders}{%
+\subsection{\texorpdfstring{\textbf{2.4) DataModule.py
+Placeholders}}{2.4) DataModule.py Placeholders}}\label{datamodule.py-placeholders}}
+
+The datamodule.py code defines a DataModule for a PyTorch project. A
+DataModule in PyTorch Lightning is a way of organizing the code to
+handle loading, preprocessing and splitting of the data. The DataModule
+class is a subclass of pl.LightningDataModule.
+
+The DataModule defined here loads the breast cancer histology image
+dataset, which consists of small image patches of size 32 x 32. The
+dataset is split into train, validation and test sets. During training,
+patches are randomly sampled from the train set, transformed and then
+passed to the model. The dataset normalization statistics (mean and
+standard deviation) are calculated from the train set and then used to
+normalize the image data in all datasets.
+
+\_\_init\_\_: initializes the instance of the class with hyperparameters
+and other class attributes.
+
+add\_dataset\_specific\_args: adds dataset specific command-line
+arguments to the argument parser.
+
+prepare\_data: downloads the dataset and prepares it. This method is
+called only once and on a single GPU.
+
+setup: This method is called on every GPU and it splits the dataset into
+train, validation and test sets.
+
+train\_dataloader: Returns the dataloader for training set.
+
+val\_dataloader: Returns the dataloader for validation set.
+
+test\_dataloader: Returns the dataloader for test set.
+
+This DataModule class also inherits some other useful methods and
+attributes from the pl.LightningDataModule class such as to, cpu, cuda,
+num\_workers, batch\_size, etc.
+
+\hypertarget{task.py-place-holder}{%
+\subsection{\texorpdfstring{\textbf{2.5) Task.py Place
+holder}}{2.5) Task.py Place holder}}\label{task.py-place-holder}}
+
+This is a PyTorch Lightning module for a Variational Autoencoder (VAE).
+It is a type of generative model that learns a latent representation of
+the input data and generates new data samples from the learned
+distribution.
+
+The VAE class inherits from the LightningModule class and has the
+following methods:
+
+add\_model\_specific\_args: a static method that defines the
+model-specific arguments for the argparse module.
+
+\_\_init\_\_: initializes the VAE model with the specified
+hyperparameters and the encoder and decoder architectures.
+
+encode: a method that takes an input image and encodes it into a latent
+representation.
+
+decode: a method that takes a latent representation and decodes it into
+an image.
+
+forward: a method that combines encode and decode to perform the full
+VAE forward pass.
+
+loss\_function: a method that calculates the VAE loss function, which
+consists of a reconstruction loss and a Kullback-Leibler divergence
+term.
+
+training\_step: a method that runs a single training step for the VAE
+model.
+
+validation\_step: a method that runs a single validation step for the
+VAE model.
+
+generate\_images: a method that generates new images from random samples
+of the latent space.
+
+from\_pretrained: a class method that loads a pretrained VAE model from
+a checkpoint file. The checkpoints are stored on AWS S3 and can be
+accessed using the pretrained\_urls dictionary.
+
+\hypertarget{section-2}{%
+\subsection{}\label{section-2}}
+
+\hypertarget{train.py-script}{%
+\subsection{\texorpdfstring{\textbf{2.6) Train.py
+Script}}{2.6) Train.py Script}}\label{train.py-script}}
+
+Haven't changed script as per instructions, but used this function for
+training purposes.
+
+\hypertarget{section-3}{%
+\subsection{}\label{section-3}}
+
+\hypertarget{main.ipynb}{%
+\subsection{\texorpdfstring{\textbf{2.7)
+main.ipynb}}{2.7) main.ipynb}}\label{main.ipynb}}
+
+Implemented as per instructions, and used to call train.py and other
+files.
+
+Included the screenshot, logs for reference.
+
+\includegraphics[width=6.26806in,height=2.45486in]{vertopal_30dbe43b6fad4b37887e227972ded77d/media/image3.png}
+
+\includegraphics[width=6.26806in,height=2.53194in]{vertopal_30dbe43b6fad4b37887e227972ded77d/media/image4.png}
+
+\hypertarget{section-4}{%
+\subsection{}\label{section-4}}
+
+\hypertarget{extra-credit}{%
+\subsection{\texorpdfstring{\textbf{3) Extra
+Credit}}{3) Extra Credit}}\label{extra-credit}}
+
+I ve tried to implement method on CNN. The implementation of a
+convolutional neural network (CNN) in Python using the Keras API of
+TensorFlow 2. The class provides methods to add layers such as
+convolutional layers, dense layers, and pooling layers. It also provides
+methods to set the loss function, metric, and optimizer, and to compile
+and train the model. Additionally, it provides methods to save and load
+the model, set and get the weights and biases of the layers, and remove
+the last layer.
+
+The class implementation can be used to create and train a CNN model for
+various computer vision tasks such as image classification, object
+detection, and segmentation. The implementation provides a modular
+approach to add or remove layers, set different hyperparameters, and
+save or load the model.
+
+\hypertarget{section-5}{%
+\subsection{}\label{section-5}}
+
+\hypertarget{difficulty-adjustment}{%
+\subsection{\texorpdfstring{\textbf{4) Difficulty
+Adjustment}}{4) Difficulty Adjustment}}\label{difficulty-adjustment}}
+
+In total assignment took more than 17 hours to complete, initially to
+understand the concept it took some time.
+
+The implementation of datamodule.py section took time and implementation
+of extra credit took some more time.
+
+\end{document}
